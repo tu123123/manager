@@ -1,0 +1,107 @@
+.ItemPhieunhap {
+    td {
+        input {
+            width: 7em;
+            height: 25px;
+        }
+    }
+}
+.chitietphieunhap-body {
+    flex-wrap: wrap;
+    display: flex;
+    gap: 1rem;
+    > div {
+        width: fit-content;
+        flex: 1;
+    }
+    table {
+        border-bottom: 1px dashed;
+    }
+    .footerTable {
+        margin-top: 10px;
+        text-align: end;
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        font-size: 16px;
+        justify-content: end;
+    }
+}
+.phieunhap {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+    height: 100%;
+    overflow: auto;
+    .phieunhap-body {
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+.danhsachphieu {
+    max-width: 95dvw;
+    overflow: auto;
+}
+.inputGroup {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed rgba(192, 192, 192, 0.575);
+}
+.tableItemcuocxe {
+    position: relative;
+
+    td {
+        padding: 5px;
+    }
+
+    .itemChill {
+        position: relative;
+        padding-left: 30px;
+        &::after {
+            content: '';
+            height: 1px;
+            width: 10px;
+
+            background: rgba(182, 182, 182, 0.486);
+            position: absolute;
+            left: 10px;
+            top: 10px;
+        }
+        &::before {
+            content: '';
+            height: calc(100% + 2px);
+            width: 1px;
+
+            background: rgba(182, 182, 182, 0.486);
+            position: absolute;
+            left: 10px;
+            top: -5px;
+        }
+    }
+    .itemChillEndpoint {
+        position: relative;
+        padding-left: 30px;
+        &::after {
+            content: '';
+            height: 1px;
+            width: 10px;
+
+            background: rgba(182, 182, 182, 0.486);
+            position: absolute;
+            left: 10px;
+            top: 10px;
+        }
+        &::before {
+            content: '';
+            height: 15px;
+            width: 1px;
+
+            background: rgba(182, 182, 182, 0.486);
+            position: absolute;
+            left: 10px;
+            top: -5px;
+        }
+    }
+}

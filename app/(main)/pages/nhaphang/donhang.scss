@@ -1,0 +1,44 @@
+.ItemPhieunhap {
+    td {
+        input {
+            width: 7em;
+            height: 25px;
+        }
+    }
+}
+.chitietphieunhap-body {
+    flex-wrap: wrap;
+    display: flex;
+    gap: 1rem;
+    > div {
+        width: fit-content;
+        flex: 1;
+    }
+    table {
+        border-bottom: 1px dashed;
+    }
+    .footerTable {
+        margin-top: 10px;
+        text-align: end;
+        width: 100%;
+    }
+}
+.phieunhap {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+    height: 100%;
+    overflow: auto;
+    .phieunhap-body {
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+.chitietphieunhap {
+    overflow: auto;
+    display: grid;
+    height: 100%;
+    grid-template-rows: auto 1fr;
+}

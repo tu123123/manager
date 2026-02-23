@@ -1,0 +1,8 @@
+.adm-popup,
+.adm-action-sheet-popup {
+    z-index: 10001 !important;
+    .adm-action-sheet-button-list {
+        max-height: 70dvh;
+        overflow: auto;
+    }
+}

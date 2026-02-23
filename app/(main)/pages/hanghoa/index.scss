@@ -1,0 +1,53 @@
+.khachhang-container {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+    overflow: auto;
+    height: 100%;
+    .congno-content {
+        overflow: auto;
+
+        .congnoItem {
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-bottom: 1px dashed rgba(196, 196, 196, 0.473);
+        }
+    }
+}
+.DetailConngno {
+    .table-congno {
+        td {
+            padding: 5px;
+        }
+        border-bottom: 1px dashed rgba(134, 134, 134, 0.473);
+    }
+    .footercongno {
+        td {
+            font-weight: bold;
+            font-size: 1em;
+        }
+        width: 100%;
+        display: flex;
+        justify-content: end;
+        table {
+            width: fit-content;
+        }
+    }
+}
+.DetailConngno {
+    label {
+        padding: 5px;
+        input {
+            border-bottom: 1px dashed rgba(165, 165, 165, 0.473);
+        }
+    }
+}
+
+.itemcongno {
+    font-size: 16px;
+    span {
+        font-size: 10px;
+        color: gray;
+    }
+}
