@@ -388,33 +388,115 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
             ></Button>
         </div>
     );
+    const [listBill, setListBill] = useState({ arr: [] });
 
+    const TinhTongNo = (arrTong2, arr2 = [], total = 0, payment = 0) => {
+        try {
+            listBill.arr = [];
+            if (!arrTong2) return 0;
+            let arrTong = arrTong2.filter((i) => i.itemList.find((a) => a.id === item.id));
+            let date = { from: data.ten, to: data.ten };
+            let itemfindIndex = arrTong.findIndex((i) => i.id == data.id);
+            let indexarr = {
+                from: itemfindIndex,
+                to: itemfindIndex
+            };
+            let loopTotal = (index: number, tang = false) => {
+                let getTotal = (idx) =>
+                    arrTong[idx]?.itemList
+                        ?.find((i) => i.id === item.id)
+                        ?.itemList.filter((i) => !i.thanhtoan)
+                        .reduce((a, b) => a + b.soluong * b.gia, 0) || 0;
+                let getPayment = (idx) =>
+                    arrTong[idx]?.itemList
+                        ?.find((i) => i.id === item.id)
+                        ?.itemList.filter((i) => i.thanhtoan)
+                        .reduce((a, b) => a + b.soluong * b.gia, 0) || 0;
+                if (index >= 0 && arrTong[index]) {
+                    if (!tang) {
+                        for (let c = index; c >= 0; c--) {
+                            if (arrTong[c] && arrTong[c]?.itemList?.find((i) => i.id === item.id)?.endbill === true) break;
+
+                            total += getTotal(c);
+                            payment += getPayment(c);
+                            date.from = arrTong[c].ten;
+                            if (c < itemfindIndex) indexarr.from = c;
+                        }
+                    } else {
+                        for (let c = index; c < arrTong.length; c++) {
+                            total += getTotal(c);
+                            payment += getPayment(c);
+                            date.to = arrTong[c].ten;
+
+                            if (c > itemfindIndex) indexarr.to = c;
+                            if (arrTong[c] && arrTong[c]?.itemList?.find((i) => i.id === item.id)?.endbill === true) break;
+                        }
+                    }
+                }
+            };
+
+            if (itemfindIndex >= 0) {
+                loopTotal(itemfindIndex - 1);
+
+                if (item.endbill !== true) loopTotal(itemfindIndex + 1, true);
+            }
+
+            for (let i = indexarr.from; i <= indexarr.to; i++) {
+                let findIndex = arrTong[i]?.itemList?.findIndex((i) => i.id === item.id);
+                if (findIndex >= 0)
+                    listBill.arr.push({
+                        ...arrTong[i]?.itemList?.find((i) => i.id === item.id),
+                        index: findIndex,
+                        ten: arrTong[i].ten,
+                        idUpdate: arrTong[i].id
+                    });
+            }
+            listBill.date = date;
+            listBill.total = total;
+
+            listBill.payment = payment;
+            // return {date,total}
+        } catch (e) {
+            console.log(e);
+        }
+    };
     const totalOld = (a = 0) => {
         const index = hangxuat.findIndex((x) => x.id === data.id);
         let index1 = 0;
         let index2 = 0;
-        for (let i = index + 1; i <= hangxuat.length; i++) {
-            const find = hangxuat[i].itemList.find((x) => x.id === item.id);
-            if (!find) continue;
-            if (find?.endbill) break;
-            a += find.itemList.reduce((a, b) => a + b.soluong * b.gia, 0);
+
+        // duyệt về phía sau
+        for (let i = index + 1; i < hangxuat.length; i++) {
+            const find = hangxuat[i]?.itemList.find((x) => x.id === item.id);
+            if (!find || !find[i]) continue;
             index2 = i;
+            if (find?.endbill) break;
+            if (find[i]) a += find[i].itemList.reduce((sum, b) => sum + b.soluong * b.gia, 0);
         }
-        if (!hangxuat[index].itemList.find((x) => x.id === item.id)?.endbill)
+
+        // duyệt về phía trước
+        if (!hangxuat[index].itemList.find((x) => x.id === item.id)?.endbill) {
             for (let i = index - 1; i >= 0; i--) {
-                const find = hangxuat[i].itemList.find((x) => x.id === item.id);
+                const find = hangxuat[i]?.itemList.find((x) => x.id === item.id);
                 if (!find) continue;
-                a += find.itemList.reduce((a, b) => a + b.soluong * b.gia, 0);
-                index1 = index1;
+                if (find[i]) a += find[i].itemList.reduce((sum, b) => sum + b.soluong * b.gia, 0);
+                index1 = i;
+
                 if (find?.endbill) break;
             }
+        }
+
         return {
             total: a,
-            index1: index1,
-            index2: index2
+            index1,
+            index2
         };
     };
-    const total = totalOld();
+
+    useEffect(() => {
+        TinhTongNo(hangxuat);
+        setListBill({ ...listBill });
+    }, [hangxuat]);
     return (
         <Card ref={imgRef} title={item.name} subTitle={`Ngày âm: ${data.ten} - Ngày dương: ${moment(data.time).format('DD/MM/YYYY')}`} footer={footerContent} className="md:w-25rem">
             {open && <EditTable onClose={() => setOpen(null)} dataEdit={open}></EditTable>}
@@ -433,6 +515,7 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
                         );
                     })}
                 </table>
+
                 <div className="ItemDon-total">
                     <strong>Tổng</strong>
                     <strong>{formatNumber(item.itemList.reduce((a, b) => a + b.soluong * b.gia, 0))}</strong>
@@ -440,13 +523,17 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
                     <div className="itemtotal">{item.itemList.length}</div>
                     <div>Số thùng:</div>
                     <div className="itemtotal">{item.sothung}</div>
-                    {show && (
+                    {show && listBill?.total ? (
                         <>
-                            <div>Nợ cũ {`(${hangxuat[total.index2].ten} - ${hangxuat[total.index1].ten})`}:</div>
-                            <div className="itemtotal">{formatNumber(total.total)}</div>
-                            <strong>Tổng cộng:</strong>
-                            <strong className="itemtotal">{formatNumber(total.total + item.itemList.reduce((a, b) => a + b.soluong * b.gia, 0))}</strong>
+                            <div>Nợ cũ:</div>
+                            <div className="itemtotal">{formatNumber(listBill?.total)}</div>
+                            <strong>
+                                Tổng toa({listBill?.date.from}-{listBill?.date.to}):
+                            </strong>
+                            <strong className="itemtotal">{formatNumber(listBill?.total + item.itemList.reduce((a, b) => a + b.soluong * b.gia, 0))}</strong>
                         </>
+                    ) : (
+                        ''
                     )}
                 </div>
             </div>

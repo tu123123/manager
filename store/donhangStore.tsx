@@ -56,7 +56,7 @@ export const donHangStore = create<DonHangStore>((set) => ({
 
         getData('hangxuat', (e: hangxuatType[]) => {
             set({
-                hangxuat: e?.reverse()
+                hangxuat: e
             });
             success(e.find((x) => x.id === id));
             loadingRef.current?.off();
