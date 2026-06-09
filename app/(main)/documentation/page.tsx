@@ -136,7 +136,7 @@ interface MainLayoutProps {
 }
 
 export const metadata: Metadata = {
-    title: "Sakai by PrimeReact | Free Admin Template for Next.js",
+    title: "Hoàng Vũ Flower",
     ...
   };
 
@@ -161,7 +161,7 @@ interface FullPageLayoutProps {
 }
 
 export const metadata: Metadata = {
-    title: "Sakai by PrimeReact | Free Admin Template for Next.js",
+    title: "Hoàng Vũ Flower",
     ...
   };
 
@@ -211,9 +211,7 @@ export const LayoutProvider = (props) => {
                         </p>
 
                         <h5>PrimeReact Theme</h5>
-                        <p>
-                            Sakai theming is based on the PrimeReact theme being used.
-                        </p>
+                        <p>Sakai theming is based on the PrimeReact theme being used.</p>
 
                         <h5>SASS Variables</h5>
                         <p>

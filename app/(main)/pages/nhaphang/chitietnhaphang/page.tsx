@@ -27,6 +27,7 @@ import { toPng } from 'html-to-image';
 import { donhangItem } from '@/store/donhangStore';
 import { Capacitor } from '@capacitor/core';
 import { SelectComponent } from '@/compnents/InputSearch/selectComponent';
+import { ToggleButton } from 'primereact/togglebutton';
 const dbPhieunhap = 'phieunhap';
 const dbDanhsachphieunhap = 'danhsachphieunhap';
 const ItemPhieunhap = ({ item, onSetdata, onDelete }: { onDelete: () => void; item: phieunhapItemtype; onSetdata: () => void }) => {
@@ -111,7 +112,25 @@ const ModalAddphieunhap = ({ onClose, dataEdit }: { onClose: () => void; dataEdi
         ten: ''
     };
     const footer = (
-        <>
+        <div
+             style={{
+                display:'flex',
+                gap:'5px',
+                justifyContent:'end',
+                alignItems:'center'
+            }}
+        >  <ToggleButton
+                                style={{
+                                    height: '35px'
+                                }}
+                                onLabel="Kết thúc"
+                                offLabel="Kết thúc"
+                                onIcon="pi pi-check"
+                                offIcon="pi pi-times"
+                                checked={value.endbill}
+                                onChange={(e) => setValue((pre) => ({ ...pre, endbill: e.value }))}
+                                className="w-9rem"
+                            />
             <Button
                 onClick={() => {
                     setValue((pre) => ({
@@ -149,7 +168,7 @@ const ModalAddphieunhap = ({ onClose, dataEdit }: { onClose: () => void; dataEdi
                 }}
                 label="Lưu"
             ></Button>
-        </>
+        </div>
     );
     useEffect(() => {}, []);
     return (

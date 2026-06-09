@@ -51,6 +51,9 @@ const DetailConngno = ({ onClose, dataEdit }: { dataEdit: dsthanhtoanType; onClo
             ></Button>
             <Button
                 onClick={() => {
+                      const listCongno = danhsachPhieu.filter((x) => x.idDoitac === value.idDoitac);
+                         const find = listCongno.find(x=>x.endbill)
+                         value.group=find?.id
                     loadingRef.current?.on();
                     if (dataEdit?.id)
                         return updateData(
@@ -78,7 +81,13 @@ const DetailConngno = ({ onClose, dataEdit }: { dataEdit: dsthanhtoanType; onClo
             ></Button>
         </>
     );
+    const { danhsachPhieu, getPhieunhap, getDanhSachPhieunhap } = hangnhapStore();
     const [search, setSearch] = useState('');
+        useEffect(() => {
+        getDanhSachPhieunhap();
+        getPhieunhap();
+    }, []);
+
     return (
         <Dialog footer={footer} header={'Danh sách đơn'} visible={true} onHide={onClose}>
             <div className="DetailConngno">

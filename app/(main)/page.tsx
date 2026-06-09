@@ -16,6 +16,7 @@ import { Checkbox } from 'primereact/checkbox';
 import { updateData } from '@/compnents/config';
 import { loadingRef } from '@/layout/AppConfig';
 import { InputNumber } from 'primereact/inputnumber';
+import CalendarWithLunar from '@/compnents/calendar/calendarComponent';
 const Edit = ({ value, setValue }: { value: itemList; setValue: () => void }) => {
     const [edit, setEdit] = useState(false);
     return edit ? (
@@ -50,7 +51,7 @@ const BillItem = ({ price, item, setState }: { price: boolean; item: donhangItem
         <div className="col-12 lg:col-6 xl:col-3">
             <div className="card mb-0">
                 <div>
-                    <span className="block text-500 font-medium mb-3">{item.name}</span>
+                    <strong className="block text-500 font-medium mb-3">{item.name}</strong>
                     {/* <div className="text-900 font-medium text-xl">152</div> */}
                 </div>
                 <table
@@ -58,31 +59,83 @@ const BillItem = ({ price, item, setState }: { price: boolean; item: donhangItem
                         width: '100%'
                     }}
                 >
+                    {price ? (
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th
+                                style={{
+                                    textAlign: 'start'
+                                }}
+                            >
+                                Giá
+                            </th>{' '}
+                            <th
+                                style={{
+                                    textAlign: 'start'
+                                }}
+                            >
+                                Vốn
+                            </th>
+                        </tr>
+                    ) : (
+                        <></>
+                    )}
                     {item.itemList.map((i) => {
                         return (
                             <tr
+                                className="trTable"
                                 style={{
                                     opacity: i.checked && !price ? 0.3 : 1,
                                     textDecoration: i.checked && !price ? 'line-through' : ''
                                 }}
                                 key={i.id}
                             >
-                                <td>{i.ten}</td>
+                                <td>{i.ten}
+                                <div>
+                                    <div style={{
+                                        padding:'5px',
+                                        borderBottom:'1px dashed #dbdbdb',
+                                        color:'#949494',
+                                        fontSize:'12px'
+                                    }}>{i.note}</div>
+                                </div>
+                                </td>
                                 <td>:</td>
                                 {price ? (
-                                    <td>
-                                        <InputNumber
-                                            size={1}
-                                            mode="decimal"
-                                            minFractionDigits={0}
-                                            maxFractionDigits={5}
-                                            value={i.gia / 1000}
-                                            onChange={(e) => {
-                                                i.gia = e.value * 1000;
-                                                setState();
+                                    <>
+                                        <td
+                                            style={{
+                                                display: 'flex',
+                                                gap: '10px'
                                             }}
-                                        ></InputNumber>
-                                    </td>
+                                        >
+                                            <InputNumber
+                                                size={1}
+                                                mode="decimal"
+                                                minFractionDigits={0}
+                                                maxFractionDigits={5}
+                                                value={i.gia / 1000}
+                                                onChange={(e) => {
+                                                    i.gia = e.value * 1000;
+                                                    setState();
+                                                }}
+                                            ></InputNumber>
+                                        </td>
+                                        <td>
+                                            <InputNumber
+                                                size={1}
+                                                mode="decimal"
+                                                minFractionDigits={0}
+                                                maxFractionDigits={5}
+                                                value={i.cost / 1000}
+                                                onChange={(e) => {
+                                                    i.cost = e.value * 1000;
+                                                    setState();
+                                                }}
+                                            ></InputNumber>
+                                        </td>
+                                    </>
                                 ) : (
                                     <>
                                         <td>
@@ -176,6 +229,7 @@ const Dashboard = () => {
                         return <BillItem price={price} key={i.id} setState={() => setValue((pre) => ({ ...pre }))} item={i}></BillItem>;
                     })}
             </div>
+           
         </div>
     );
 };

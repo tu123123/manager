@@ -3,24 +3,105 @@
 import { ListDrop } from '@/compnents/ListDrop/listDrop';
 import { ListDropGroup } from '@/compnents/ListDropGroup/listDropgroup';
 import './index.scss';
+import editsvg from '@/compnents/assets/edit.svg';
 import { lienheStore } from '@/store/lienheStore';
 import { danhsachphieuType, hangnhapStore } from '@/store/hangnhapStore';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Tag } from 'primereact/tag';
+import downSvg from '@/compnents/assets/download.svg';
 import { formatNumber } from '@/compnents/e2e';
 import { Dialog } from 'primereact/dialog';
 import { thanhtoanStore } from '@/store/thanhtoanStore';
+import { Button } from 'primereact/button';
+import Image from 'next/image';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { toPng } from 'html-to-image';
+const formatvalue='DD-MM-YYYY'
+import moment from 'moment';
 const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[]; onClose: () => void }) => {
     const [value, setValue] = useState();
     const { dsThanhtoan } = thanhtoanStore();
     const { phieunhap } = hangnhapStore();
+        const [show,setShow]=useState(false)
+         const index = listCongno.findIndex(x=>x.endbill)
+         console.log(index)
     const total = listCongno.reduce((a, b) => a + b.itemList.reduce((c, d) => c + d.soluong * d.gia, 0), 0);
-    const payment = dsThanhtoan.filter((x) => x.idDoitac === listCongno[0].idDoitac).reduce((a, b) => a + b.sotien, 0);
+    const payment = dsThanhtoan.filter(x=>(!show?x.group==listCongno[index]?.id:true)&& x?.idDoitac === listCongno[0].idDoitac).reduce((a, b) => a + b.sotien, 0);
+   console.log(listCongno)
+   
+    
+
+     
+        const imgRef = useRef();
+      const footerContent = () => {
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    gap: '10px',
+                    justifyContent: 'end'
+                }}
+            >
+                <Button onClick={()=>setShow(!show)} raised outlined size="small" security="" height={20}>Show</Button>
+                <Button
+                    raised
+                    outlined
+                    size="small"
+                    onClick={async () => {
+                        const el = imgRef.current
+                      
+                        const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#ffffff' });
+
+                        const base64Data = dataUrl.split(',')[1];
+
+                        if (Capacitor.isNativePlatform()) {
+                            // ✅ ANDROID / IOS
+                            await Filesystem.requestPermissions();
+
+                            await Filesystem.writeFile({
+                                path: `export-${Date.now()}.png`,
+                                data: base64Data,
+                                directory: Directory.Documents,
+                                encoding: Encoding.Base64
+                            });
+
+                            alert('Đã lưu vào Documents 📁');
+                        } else {
+                            // ✅ WEB
+                            const link = document.createElement('a');
+                            link.href = dataUrl;
+                            link.download = 'export.png';
+                            document.body.appendChild(link);
+                            link.click();
+                            link.remove();
+                        }
+               
+                    }}
+                    icon={<Image src={downSvg} alt="" height={20}></Image>}
+                ></Button>
+                
+            </div>
+        );
+    };
     return (
-        <Dialog header={'Danh sách đơn'} visible={true} onHide={onClose}>
-            <div className="DetailConngno">
+        <Dialog footer={footerContent} header={'Danh sách đơn'} visible={true} onHide={onClose}>
+           <div ref={imgRef} className='printerdetail'>
+             <div className="DetailConngno">
+                <div className='headerdonhang'>
+                    <h4>Hoa tươi Hoàng vũ</h4>
+                    <p>ĐC: 306 Nguyên Tử Lực, phường Lâm Viên, Đà Lạt, Lâm Đồng</p>
+                 <p>SĐT: 0977625859 - 0357577926</p>
+                    <div style={{
+                        padding:'5px',
+                        fontSize:'20px',
+                        fontWeight:'bold',
+                        textAlign:'center'
+                    }}>Hóa đơn nhập hàng</div>
+                    <h6>Người bán: {listCongno[0].tenDoiTac}</h6>
+                </div>
                 <table className="table-congno">
-                    {listCongno.map((i) => {
+                    {[...listCongno.slice(0,index<0||show?listCongno.length:index)]?.reverse()?.map((i) => {
                         return i.itemList.map((x, index) => {
                             return (
                                 <tr key={x.id}>
@@ -35,7 +116,7 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[
                         });
                     })}
                 </table>
-                <div className="footercongno">
+                {show?<div className="footercongno">
                     <table>
                         <tr>
                             <td>Tổng:</td>
@@ -47,6 +128,7 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[
                         </tr>
                         <tr
                             style={{
+                                color:'red',
                                 fontWeight: 'bold'
                             }}
                         >
@@ -60,8 +142,30 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[
                             </td>
                         </tr>
                     </table>
-                </div>
+                </div>: <div className="footercongno">
+                    <table  >
+                        <tr    style={{
+                           
+                                fontWeight: 'bold'
+                            }}>
+                            <td>Tổng:</td>
+                            <td>{formatNumber(listCongno.slice(0,index<0?listCongno.length:index).reduce((a,b)=>a+b.itemList.reduce((c,d)=>c+d.gia*d.soluong,0),0))}</td>
+                        </tr>
+                          <tr >
+                            <td>Đã thanh toán:</td>
+                            <td>{formatNumber(payment)}</td>
+                        </tr>
+                         <tr    style={{
+                                color:'red',
+                                fontWeight: 'bold'
+                            }}>
+                            <td>Còn lại:</td>
+                            <td>{formatNumber(listCongno.slice(0,index<0?listCongno.length:index).reduce((a,b)=>a+b.itemList.reduce((c,d)=>c+d.gia*d.soluong,0),0)-payment)}</td>
+                        </tr>
+                    </table>
+                </div> }
             </div>
+           </div>
         </Dialog>
     );
 };

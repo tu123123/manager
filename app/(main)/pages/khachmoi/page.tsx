@@ -16,8 +16,6 @@ import { dsthanhtoanType, thanhtoanStore } from '@/store/thanhtoanStore';
 import { addData, delData, updateData } from '@/compnents/config';
 import { loadingRef } from '@/layout/AppConfig';
 import { confirmDialog } from 'primereact/confirmdialog';
-import moment from 'moment';
-import { dbmathang, dsMathangType, mathangStore } from '@/store/mathangStore';
 import Image from 'next/image';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Capacitor } from '@capacitor/core';
@@ -25,17 +23,19 @@ import { Upload } from 'antd';
 import { toPng } from 'html-to-image';
 import ImgCrop from 'antd-img-crop';
 import { RadioButton } from 'primereact/radiobutton';
-const dbThanhtoan = dbmathang;
-const DetailConngno = ({ onClose, dataEdit }: { dataEdit: dsMathangType; onClose: () => void }) => {
-    const [value, setValue] = useState<dsMathangType>(
+import { dbkhachmoi, dskhachmoistype, khachmoiStore } from '@/store/khachmoistore';
+import { Checkbox } from 'primereact/checkbox';
+import { Tag } from 'primereact/tag';
+import { TriStateCheckbox } from 'primereact/tristatecheckbox';
+const dbThanhtoan = dbkhachmoi;
+const DetailConngno = ({ onClose, dataEdit }: { dataEdit: dskhachmoistype; onClose: () => void }) => {
+    const [value, setValue] = useState<dskhachmoistype>(
         dataEdit.id
             ? JSON.parse(JSON.stringify(dataEdit))
             : {
-                  ten: '',
-                  gia: 0,
-                  cost:0,
-                  category:'hoa',
-                  img:''
+                 ten: '',
+    status:false,
+    sotien: 0,
               }
     );
     const { phieunhap } = hangnhapStore();
@@ -63,6 +63,12 @@ const DetailConngno = ({ onClose, dataEdit }: { dataEdit: dsMathangType; onClose
             ></Button>
             <Button
                 onClick={() => {
+                    if(!value.ten)
+                    return  confirmDialog({
+                                                message: 'Vui lòng nhập tên',
+                                                header: 'Lỗi!',
+                                              
+                                            });
                     loadingRef.current?.on();
 
                     if (dataEdit?.id)
@@ -115,73 +121,41 @@ const DetailConngno = ({ onClose, dataEdit }: { dataEdit: dsMathangType; onClose
                         onChange={(e) =>
                             setValue((pre) => ({
                                 ...pre,
-                                gia: e * 1000
+                                sotien: e * 1000
                             }))
                         }
-                        value={value.gia / 1000}
+                        value={value.sotien / 1000}
                         type="number"
                     ></Input>
-                </label> <label>
-                    <div>Nhập số giá gốc</div>
-                    <Input
-                        onChange={(e) =>
-                            setValue((pre) => ({
+                </label> 
+                  <label style={{
+                    display:'flex',
+                    alignItems:'center',
+                    gap:'5px'
+                  }}>
+                  
+                    <Checkbox checked={value.status}   onChange={(e) =>
+                          
+                              setValue((pre) => ({
                                 ...pre,
-                                cost: e * 1000
+                                status: e.checked
                             }))
-                        }
-                        value={value.cost / 1000}
-                        type="number"
-                    ></Input>
+                          
+                        }></Checkbox>  <div>Đã mời</div>
                 </label>
-                  <label>
-                    <div>Loại sản phẩm</div>
-                     <div className="flex align-items-center">
-        <RadioButton inputId="ingredient2" name="hoa" value="hoa"  onChange={(e) =>
-                            setValue((pre) => ({
-                                ...pre,
-                                category:e.value
-                            }))
-                        }
- checked={value.category === 'hoa'} />
-        <label htmlFor="ingredient2" className="ml-2">Hoa</label>
-    </div>
-                    <div className="flex align-items-center">
-        <RadioButton inputId="ingredient1" name="Phụ liệu" value="pl"  onChange={(e) =>
-                            setValue((pre) => ({
-                                ...pre,
-                                category: e.value
-                            }))
-                        }
- checked={value.category === 'pl'} />
-        <label htmlFor="ingredient1" className="ml-2">Phụ liệu</label>
-    </div>
-   
-                </label>
-                   <label>
-                    <div>Nhập link hình ảnh</div>
-                    <Input
-                        onChange={(e) =>
-                            setValue((pre) => ({
-                                ...pre,
-                                img: e 
-                            }))
-                        }
-                        value={value.img}
-                      
-                    ></Input>
-                </label>
+                   
        
             </div>
         </Dialog>
     );
 };
-export default function Congno() {
-    const { dsMathang, getMatHang } = mathangStore();
+export default function Khachmoi() {
+    const { dsKhachmoi, getDsKhachmoi } = khachmoiStore();
     const { getLienhe, lienhe } = lienheStore();
     const [search,setSearch]=useState('')
+    const [status,setStatus]=useState(null)
     useEffect(() => {
-        getMatHang();
+        getDsKhachmoi();
     }, []);
     const imgRef = useRef();
     const [open, setOpen] = useState<dsthanhtoanType[] | boolean>(false);
@@ -201,7 +175,9 @@ export default function Congno() {
                     justifyContent: 'space-between',
                     alignItems: 'center'
                 }}>
-                    <h4>Danh sách hàng hóa</h4>
+                    <h4>Danh sách Khách mời</h4>
+                  
+       
                 <div
                     style={{
                         display: 'flex',
@@ -247,12 +223,26 @@ export default function Congno() {
                     ></Button>
                 </div>
                 </div>
+              <div style={{
+                display:'grid',
+                gridTemplateColumns:' auto 1fr',
+                gap:'10px'
+              }}>
+                
+                   <label style={{
+                    width:'max-content',
+                    display:'flex',
+                    gap:'10px',
+                    alignItems:'center'
+
+                }}>  <TriStateCheckbox invalid value={status} onChange={(e) => setStatus(e.value)} />{status===null?'Tất cả':status?'Đã mời':'Chưa Mời'}</label>
                 <Input style={{
                 borderBottom:'1px solid gray'
-                }} placeholder='Tìm kiếm...' value={search} onChange={(e)=>setSearch(e)}></Input>
+                }} placeholder='Tìm kiếm...' value={search} onChange={(e)=>setSearch(e)}></Input>  
+              </div>
             </div>
             <div ref={imgRef} className="congno-content">
-                {dsMathang.filter(e=>e.ten?.toLowerCase().includes(search?.toLowerCase())).map((i) => {
+                {dsKhachmoi.filter(x=>x.status==status||status===null).filter(e=>e.ten?.toLowerCase().includes(search?.toLowerCase())).map((i) => {
                     return (
                         <div
                             onClick={() => setOpen(i)}
@@ -264,13 +254,20 @@ export default function Congno() {
                                 width: '100%'
                             }}
                         >
-                            <div>{i.ten}</div>
+                            <div style={{
+                                display:'flex',
+                                alignItems:'center',
+                                gap:'10px'
+                            }}><Tag severity={i.status?'success':'info'}>{i.status?"Đã mời":'Chưa mời'}</Tag>{i.ten} </div>
                             <div className="itemcongno">
-                                <div>{formatNumber(i.gia)}</div>
+                                <div>{formatNumber(i.sotien)}</div>
                             </div>
                         </div>
                     );
                 })}
+            </div>
+            <div className='total'>
+                Tổng: {formatNumber(dsKhachmoi.reduce((a,b)=>a+b.sotien,0))}
             </div>
         </div>
     );

@@ -18,8 +18,10 @@ import { donHangStore } from '@/store/donhangStore';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import moment from 'moment';
+import { Input } from 'antd';
+import { SelectComponent } from '@/compnents/InputSearch/selectComponent';
 
-const ModalKhachhang = ({ onClose, dataEdit }: { onClose: () => void; dataEdit: unknown }) => {
+export const ModalKhachhang = ({iscalendar, onClose, dataEdit, date='' }: {date:string, onClose: () => void; dataEdit: unknown,iscalendar:boolean }) => {
     const [loading, setLoading] = useState(false);
     const update = () => {
         updateData(
@@ -34,6 +36,16 @@ const ModalKhachhang = ({ onClose, dataEdit }: { onClose: () => void; dataEdit: 
         );
     };
     const add = () => {
+        if(iscalendar)
+        addData(
+                                'phieunhap',
+                                value,
+                                () => {
+                                    onClose();
+                                    loadingRef.current?.off();
+                                },
+                                () => loadingRef.current?.off()
+                            );
         addData(
             'hangxuat',
 
@@ -49,7 +61,7 @@ const ModalKhachhang = ({ onClose, dataEdit }: { onClose: () => void; dataEdit: 
         dataEdit?.id
             ? JSON.parse(JSON.stringify(dataEdit))
             : {
-                  ten: '',
+                  ten: date,
                   itemList: []
               }
     );
@@ -70,7 +82,7 @@ const ModalKhachhang = ({ onClose, dataEdit }: { onClose: () => void; dataEdit: 
         </div>
     );
     return (
-        <Dialog onHide={onClose} header={dataEdit.id ? 'Cập nhật đơn hàng' : 'Thêm đơn hàng'} visible footer={footerContent}>
+        <Dialog onHide={onClose} header={dataEdit?.id ? 'Cập nhật đơn hàng' : 'Thêm đơn hàng'} visible footer={footerContent}>
             <label style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <label htmlFor="username">Nhập tên đơn hàng</label>
                 <InputText id="username" value={value.ten} onChange={(e) => setValue((pre) => ({ ...pre, ten: e.target.value }))} />
@@ -145,7 +157,13 @@ export default function XuatHang() {
             }
         }
     ];
+    const [search,setSearch]=useState('')
     useEffect(() => getHangxuat(), []);
+        const { getLienhe, lienhe } = lienheStore();
+        useEffect(() => {
+            getLienhe();
+        }, []);
+    
     return (
         <div className="khachhang-container">
             {open && <ModalKhachhang onClose={() => setOpen(null)} dataEdit={open}></ModalKhachhang>}
@@ -160,8 +178,14 @@ export default function XuatHang() {
                 <h4>Danh sách đơn hàng</h4>
                 <Button onClick={() => setOpen(true)} label="Thêm đơn hàng"></Button>
             </div>
-
-            <DataTable scrollable scrollHeight="100%" virtualScrollerOptions={{ itemSize: 30 }} value={hangxuat}>
+            <SelectComponent     data={lienhe}
+                            value={search.name}
+                            onChange={(e) => {
+                               
+                               console.log(e,hangxuat)
+                                setSearch(e);
+                            }}></SelectComponent>
+            <DataTable scrollable scrollHeight="100%" virtualScrollerOptions={{ itemSize: 30 }} value={hangxuat.filter(i=>!search||i.itemList.find(j=>j.id===search.id))}>
                 {columns.map((i) => {
                     return <Column field={i.dataIndex} key={i.label} header={i.label} body={i.render}></Column>;
                 })}

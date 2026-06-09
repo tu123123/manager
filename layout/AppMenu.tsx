@@ -14,7 +14,10 @@ const AppMenu = () => {
     const model: AppMenuItem[] = [
         {
             label: 'Home',
-            items: [{ label: 'Đơn hàng hôm nay', icon: 'pi pi-fw pi-home', to: '/' }]
+            items: [{ label: 'Đơn hàng hôm nay', icon: 'pi pi-fw pi-home', to: '/' },
+                { label: 'Khách mời', to: '/pages/khachmoi' }
+            ]
+            
         },
         {
             label: 'Tài chính',
@@ -23,7 +26,9 @@ const AppMenu = () => {
                 {
                     label: 'Lịch sử thanh toán',
                     to: '/pages/lichsuthanhtoan'
-                }
+                },
+                  { label: 'Chi phí đám cưới', to: '/pages/damcuoi' },
+                
             ]
         },
         {
@@ -46,6 +51,14 @@ const AppMenu = () => {
                     to: '/pages/xuathang'
                 }
             ]
+        },
+        {
+            label: 'Báo cáo',
+            items: [{ label: 'Báo cáo lãi lỗ', to: '/pages/baocao' },
+                { label: 'Lịch', to: '/pages/lich' }
+            ]
+            
+            
         },
         {
             label: 'Thiết lập',

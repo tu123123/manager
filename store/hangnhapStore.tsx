@@ -23,6 +23,7 @@ export interface phieunhapItemtype {
 export interface danhsachphieuType {
     id?: string;
     group: string;
+    endbill:boolean;
     itemList: phieunhapItemtype[];
 
     tenDoiTac: string;

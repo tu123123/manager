@@ -6,6 +6,8 @@ export interface dsMathangType {
     id?: string;
     time?: string;
     ten: string;
+    category:string;
+    img:string;
     gia: number;
 }
 interface MathangStore {

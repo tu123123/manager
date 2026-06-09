@@ -1,9 +1,12 @@
 .khachhang-container {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto 1fr auto;
     gap: 10px;
     overflow: auto;
     height: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    background: rgb(255, 255, 255);
     .congno-content {
         overflow: auto;
 
@@ -15,27 +18,7 @@
         }
     }
 }
-.printerdetail{
-    padding: 10px;
-   
-    p,h4,h6{
-        padding: 0;
-        margin: 5px;
-    }
-    h6{
-        padding: 5px;
-    }
-    .headerdonhang{
-        p{
-            color: gray;
-            font-size: 13px;
-        }
-    }
-}
 .DetailConngno {
-    padding: 10px;
-    border: 1px solid gray;
-    border-radius: 5px;
     .table-congno {
         td {
             padding: 5px;
@@ -44,7 +27,7 @@
     }
     .footercongno {
         td {
-            padding: 3px 10px;
+            font-weight: bold;
             font-size: 1em;
         }
         width: 100%;
@@ -55,6 +38,29 @@
         }
     }
 }
-.headerdonhang{
-    border-bottom: 1px dashed gray;
+.DetailConngno {
+    label {
+        padding: 5px;
+        input {
+            border-bottom: 1px dashed rgba(165, 165, 165, 0.473);
+        }
+    }
+}
+
+.itemcongno {
+    font-size: 16px;
+    span {
+        font-size: 10px;
+        color: gray;
+    }
+}
+.ant-modal-wrap{
+    z-index: 11000 !important;
+}
+.total
+{
+    display: flex;
+    justify-content: end;
+    padding: 10px;
+    font-size: 18px;
 }

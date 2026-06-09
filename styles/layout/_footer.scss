@@ -5,4 +5,16 @@
     justify-content: center;
     padding-top: 1rem;
     border-top: 1px solid var(--surface-border);
+    >div{
+        flex: 1;
+        display: flex;
+        justify-content: center;
+
+        height: 40px;
+        align-items: center;
+        border-radius: 5px;
+        &:hover{
+            background-color: rgb(170, 191, 235);
+        }
+    }
 }

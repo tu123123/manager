@@ -11,6 +11,7 @@ import downSvg from '@/compnents/assets/download.svg';
 import Image from 'next/image';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
+import detailsvg from '@/compnents/assets/detail.svg'
 import { Column } from 'primereact/column';
 import { InputNumber } from 'primereact/inputnumber';
 import { CascadeSelect } from 'primereact/cascadeselect';
@@ -29,17 +30,44 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Capacitor } from '@capacitor/core';
 import InputSearch from '@/compnents/InputSearch/inputsearch';
 import { SelectComponent } from '@/compnents/InputSearch/selectComponent';
+import { InputTextarea } from 'primereact/inputtextarea';
 const db = 'hangxuat';
 const dataContent = React.createContext();
 const ItemDonhang = ({ item, setValue }: { item: itemList; setValue: unknown }) => {
     const [note, setNote] = useState(false);
+        const { hangxuat } = donHangStore();
     return (
         <div className="itemDonhang">
             <InputSearch
                 onChangeSelect={(e) => {
-                    item.ten = e.ten;
+                  try{
+                      let itemfind=null
+                     
+                    const find=[...hangxuat].reverse().find(x=>x.itemList.find(y=> {
+                        itemfind=y.itemList.find(z=>z.ten==e.ten)
+                        return itemfind
+                    }))
+                    if(find)
+                    {
+                    item.ten = itemfind.ten;
+                    item.cost = itemfind.cost||0;
+                    item.gia = itemfind.gia;
+                    setValue((pre) => ({ ...pre }));
+                    }
+                    else
+                 {
+                       item.ten = e.ten;
+                    item.cost = e.cost||0;
                     item.gia = e.gia;
                     setValue((pre) => ({ ...pre }));
+                 }
+                  }
+                  catch{
+      item.ten = e.ten;
+                    item.cost = e.cost||0;
+                    item.gia = e.gia;
+                    setValue((pre) => ({ ...pre }));
+                  }
                 }}
                 value={item.ten}
                 onChange={(e) => {
@@ -78,15 +106,26 @@ const ItemDonhang = ({ item, setValue }: { item: itemList; setValue: unknown }) 
                 ></InputNumber>{' '}
                 = {formatNumber(item.gia * item.soluong)}
             </div>
+            <InputNumber
+                value={(item.cost || 0) / 1000}
+                mode="decimal"
+                placeholder="Giá vốn"
+                minFractionDigits={0}
+                maxFractionDigits={5}
+                onChange={(x) => {
+                    item.cost = (x.cost as number) * 1000;
+                    setValue((pre) => ({ ...pre }));
+                }}
+            ></InputNumber>
             {note && (
-                <InputText
+                <InputTextarea
                     placeholder="Ghi chú"
                     value={item.note}
                     onChange={(x) => {
                         item.note = x.target.value;
                         setValue((pre) => ({ ...pre }));
                     }}
-                ></InputText>
+                ></InputTextarea>
             )}
             <div className="itemDonhang-footer">
                 <Button
@@ -125,6 +164,7 @@ const EditTable = ({ onClose, dataEdit }: { onClose: () => void; dataEdit?: donh
                   endbill: false,
                   id: '',
                   sothung: 0,
+                  cost: 0,
                   itemList: [],
                   name: '',
                   time: ''
@@ -313,9 +353,100 @@ const EditTable = ({ onClose, dataEdit }: { onClose: () => void; dataEdit?: donh
         </Dialog>
     );
 };
+const ChitietDon=({listBill, onClose}:{listBill:donhangItem[],onClose:()=>void})=>{
+      const imgRef = useRef();
+
+    return <Dialog footer={
+                <Button
+                raised
+                outlined
+                size="small"
+                onClick={async () => {
+                    const el = imgRef.current;
+             
+                    const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#ffffff' });
+
+                    const base64Data = dataUrl.split(',')[1];
+
+                    if (Capacitor.isNativePlatform()) {
+                        // ✅ ANDROID / IOS
+                        await Filesystem.requestPermissions();
+
+                        await Filesystem.writeFile({
+                            path: `export-${Date.now()}.png`,
+                            data: base64Data,
+                            directory: Directory.Documents,
+                            encoding: Encoding.Base64
+                        });
+
+                        alert('Đã lưu vào Documents 📁');
+                    } else {
+                        // ✅ WEB
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        link.download = 'export.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                    }
+              
+                }}
+                icon={<Image src={downSvg} alt="" height={20}></Image>}
+            ></Button>
+    } onHide={onClose} visible>
+        <Card className='chitietdon' d header={
+            <div className='headerdonhang'>
+                <h4>Hoa tươi Hoàng Vũ</h4>
+                <p>ĐC: 306 Nguyên Tử Lực, phường Lâm Viên, Đà Lạt, Lâm Đồng</p>
+                 <p>SĐT: 0977625859 - 0357577926</p>
+                       <div>Hóa đơn bán hàng</div>
+
+            </div>
+        } ref={imgRef} title={<div><span style={{
+            fontSize:'15px',
+            fontWeight:'500'
+        }}>Người nhận:</span> {listBill[0].name}</div>} subTitle={`Ngày âm: ${listBill[0].ten} - ${listBill[listBill.length-1].ten}`} >
+
+           
+            <div className="ItemDon-content">
+                <table>
+                    {listBill.map((i) => {
+                   
+                        return (
+                           <React.Fragment key={i.id}>
+                             
+                            {i.itemList?.map((j,index)=>{
+                                return  <tr   key={j.id}>
+                                    <td className='daysgroup'> <div >{index==0?i.ten:''}</div></td>
+                                <td>{j.ten}</td>
+                                <td>{j.soluong}</td>
+                                <td>x</td>
+                                <td>{formatNumber(j.gia)}</td>
+                                <td>=</td>
+                                <td>{formatNumber(j.soluong * j.gia)}</td>
+                            </tr>
+                            })}
+                           </React.Fragment>
+                        );
+                    })}
+                </table>
+
+                <div className="ItemDon-total">
+                    <strong>Tổng:</strong>
+                    <strong>{formatNumber(listBill.reduce((a,b)=>a+b.itemList.reduce((c,d)=>c+d.gia*d.soluong,0),0))}</strong>
+  
+                        
+                           
+                
+                </div>
+            </div>
+        </Card>
+    </Dialog>
+}
 const ItemDon = ({ item }: { item: donhangItem }) => {
     const imgRef = useRef();
     const fakeref = useRef<HTMLDivElement>();
+    const [showdetail,setShowdetail]=useState<donhangItem[]>()
     const [open, setOpen] = useState<donhangItem | null>();
     const { data } = useContext(dataContent);
     const [show, setShow] = useState(true);
@@ -329,13 +460,14 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
             }}
         >
             <ToggleButton height={30} checked={show} onLabel="Total ON" offLabel="Total OFF" onChange={(e) => setShow(e.value)} />
+         <Button onClick={() => setShowdetail(listBill.arr)} raised outlined size="small" security="" icon={<Image src={detailsvg} alt="" height={20}></Image>}></Button>
             <Button onClick={() => setOpen(item)} raised outlined size="small" security="" icon={<Image src={editsvg} alt="" height={20}></Image>}></Button>
             <Button
                 raised
                 outlined
                 size="small"
                 onClick={async () => {
-                    const el = imgRef.current.querySelector('.p-card-body');
+                    const el = imgRef.current;
                     const footer = imgRef.current.querySelector('.p-card-footer');
                     footer.style.display = 'none';
                     const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#ffffff' });
@@ -498,7 +630,18 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
         setListBill({ ...listBill });
     }, [hangxuat]);
     return (
-        <Card ref={imgRef} title={item.name} subTitle={`Ngày âm: ${data.ten} - Ngày dương: ${moment(data.time).format('DD/MM/YYYY')}`} footer={footerContent} className="md:w-25rem">
+        <Card header={
+            <div className='headerdonhang'>
+                <h4>Hoa tươi Hoàng Vũ</h4>
+                <p>ĐC: 306 Nguyên Tử Lực, phường Lâm Viên, Đà Lạt, Lâm Đồng</p>
+                 <p>SĐT: 0977625859 - 0357577926</p>
+     <div>Hóa đơn bán hàng</div>
+            </div>
+        } ref={imgRef} title={<div><span style={{
+            fontSize:'15px',
+            fontWeight:'500'
+        }}>Người nhận:</span> {item.name}</div>} subTitle={`Ngày âm: ${data.ten} - Ngày dương: ${moment(data.time).format('DD/MM/YYYY')}`} footer={footerContent} className="md:w-25rem">
+  {showdetail&&<ChitietDon onClose={()=>setShowdetail(null)} listBill={showdetail}></ChitietDon>}
             {open && <EditTable onClose={() => setOpen(null)} dataEdit={open}></EditTable>}
             <div className="ItemDon-content">
                 <table>
@@ -523,6 +666,7 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
                     <div className="itemtotal">{item.itemList.length}</div>
                     <div>Số thùng:</div>
                     <div className="itemtotal">{item.sothung}</div>
+                    {console.log(listBill)}
                     {show && listBill?.total ? (
                         <>
                             <div>Nợ cũ:</div>

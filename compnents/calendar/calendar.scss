@@ -1,0 +1,68 @@
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* 7 cột */
+  gap: 4px;
+  margin-top: 16px;
+}
+
+.day-cell {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px;
+  text-align: center;
+  background-color: #fff;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.day-cell.header {
+  font-weight: bold;
+  background-color: #f2f2f2;
+}
+
+.day-cell.today {
+  background-color: #cce5ff;
+  border: 2px solid #3399ff;
+}
+
+.day-cell .solar {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.day-cell .lunar {
+  font-size: 11px;
+  color: #666;
+}
+
+.day-cell.highlight {
+  background-color: #ffe6e6; /* ví dụ highlight mùng 1, rằm */
+  border: 1px solid #ff9999;
+}
+.month-list, .year-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.month-item, .year-item {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.month-item.active, .year-item.active {
+  background-color: #3399ff;
+  color: #fff;
+  border-color: #3399ff;
+}
+.calendarss{
+  .month-item{
+    padding: 5px;
+  }
+}
