@@ -1,22 +1,117 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import { Button } from 'primereact/button';
-import { Chart } from 'primereact/chart';
-import { Column } from 'primereact/column';
-import { DataTable } from 'primereact/datatable';
-import { Menu } from 'primereact/menu';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ProductService } from '../../demo/service/ProductService';
-import { LayoutContext } from '../../layout/context/layoutcontext';
-import Link from 'next/link';
-import { Demo } from '@/types';
+import downSvg from '@/compnents/assets/download.svg';
 import { ChartData, ChartOptions } from 'chart.js';
+import './style.scss'
 import { donhangItem, donHangStore, hangxuatType, itemList } from '@/store/donhangStore';
 import { Checkbox } from 'primereact/checkbox';
 import { updateData } from '@/compnents/config';
 import { loadingRef } from '@/layout/AppConfig';
 import { InputNumber } from 'primereact/inputnumber';
-import CalendarWithLunar from '@/compnents/calendar/calendarComponent';
+import { Dialog } from 'primereact/dialog';
+import { formatNumber } from '@/compnents/e2e';
+import { danhsachphieuType } from '@/store/hangnhapStore';
+import { toPng } from 'html-to-image';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import Image from 'next/image';
+const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[]; onClose: () => void }) => {
+    const [value, setValue] = useState();
+        const imgRef = useRef();
+      const footerContent = () => {
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    gap: '10px',
+                    justifyContent: 'end'
+                }}
+            >
+                
+                <Button
+                    raised
+                    outlined
+                    size="small"
+                    onClick={async () => {
+                        const el = imgRef.current
+                      
+                        const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#ffffff' });
+
+                        const base64Data = dataUrl.split(',')[1];
+
+                        if (Capacitor.isNativePlatform()) {
+                            // ✅ ANDROID / IOS
+                            await Filesystem.requestPermissions();
+
+                            await Filesystem.writeFile({
+                                path: `export-${Date.now()}.png`,
+                                data: base64Data,
+                                directory: Directory.Documents,
+                                encoding: Encoding.Base64
+                            });
+
+                            alert('Đã lưu vào Documents 📁');
+                        } else {
+                            // ✅ WEB
+                            const link = document.createElement('a');
+                            link.href = dataUrl;
+                            link.download = 'export.png';
+                            document.body.appendChild(link);
+                            link.click();
+                            link.remove();
+                        }
+               
+                    }}
+                    icon={<Image src={downSvg} alt="" height={20}></Image>}
+                ></Button>
+                
+            </div>
+        );
+    };
+    return (
+        <Dialog footer={footerContent} header={'Danh sách đơn'} visible={true} onHide={onClose}>
+           <div ref={imgRef} className='printerdetail'>
+             <div className="DetailConngno">
+                <div className='headerdonhang'>
+                    <h4>Hoa tươi Hoàng vũ</h4>
+                    <p>ĐC: 306 Nguyên Tử Lực, phường Lâm Viên, Đà Lạt, Lâm Đồng</p>
+                 <p>SĐT: 0977625859 - 0357577926</p>
+                    <div style={{
+                        padding:'5px',
+                        fontSize:'20px',
+                        fontWeight:'bold',
+                        textAlign:'center'
+                    }}>Danh sách đặt hàng</div>
+                </div>
+                <table className="table-congno">
+                    <thead>
+                        <tr>
+                            <th>
+                            Tên
+                        </th>
+                        <th>Số lượng</th>
+                        </tr>
+                    </thead>
+                    {listCongno?.map((x) => {
+
+                            return (
+                                <tr key={x.id}>
+                                  
+                                    <td>{x.ten}:</td> <td>{x.soluong}</td>
+                                    
+                                </tr>
+                            );
+                      
+                    })}
+                </table>
+               
+            </div>
+           </div>
+        </Dialog>
+    );
+};
 const Edit = ({ value, setValue }: { value: itemList; setValue: () => void }) => {
     const [edit, setEdit] = useState(false);
     return edit ? (
@@ -46,7 +141,7 @@ const Edit = ({ value, setValue }: { value: itemList; setValue: () => void }) =>
         </div>
     );
 };
-const BillItem = ({ price, item, setState }: { price: boolean; item: donhangItem; setState: () => void }) => {
+const BillItem = ({ price, item, setState,order }: {order:boolean; price: boolean; item: donhangItem; setState: () => void }) => {
     return (
         <div className="col-12 lg:col-6 xl:col-3">
             <div className="card mb-0">
@@ -59,7 +154,7 @@ const BillItem = ({ price, item, setState }: { price: boolean; item: donhangItem
                         width: '100%'
                     }}
                 >
-                    {price ? (
+                    {price&&!order ? (
                         <tr>
                             <th></th>
                             <th></th>
@@ -86,8 +181,8 @@ const BillItem = ({ price, item, setState }: { price: boolean; item: donhangItem
                             <tr
                                 className="trTable"
                                 style={{
-                                    opacity: i.checked && !price ? 0.3 : 1,
-                                    textDecoration: i.checked && !price ? 'line-through' : ''
+                                    opacity: i.checked && !price&&!order ? 0.3 : 1,
+                                    textDecoration: i.checked && !price&&!order ? 'line-through' : ''
                                 }}
                                 key={i.id}
                             >
@@ -102,7 +197,13 @@ const BillItem = ({ price, item, setState }: { price: boolean; item: donhangItem
                                 </div>
                                 </td>
                                 <td>:</td>
-                                {price ? (
+                                {order?<><td>{i.soluong}</td><td> <Checkbox
+                                                onChange={(e) => {
+                                                    i.order = e.checked;
+                                                    setState();
+                                                }}
+                                                checked={i.order}
+                                            ></Checkbox></td></>:price ? (
                                     <>
                                         <td
                                             style={{
@@ -162,6 +263,8 @@ const BillItem = ({ price, item, setState }: { price: boolean; item: donhangItem
 };
 const Dashboard = () => {
     const [price, setPrice] = useState(false);
+      const [order, setorder] = useState(false);
+      const [getorder,setGetorder]=useState(false);
     const { getHangxuat, hangxuat } = donHangStore();
     const [value, setValue] = useState<hangxuatType>();
     useEffect(() => {
@@ -186,13 +289,41 @@ const Dashboard = () => {
                     gap: '10px',
                     justifyContent: 'end'
                 }}
-            >
-                <Button
+            >  <Button
+                    onClick={() => {
+                        setorder(!order);
+                    }}
+                    label={order?'Quay lại':'Đặt hàng'}
+                ></Button>
+                {order?<Button
+                    onClick={() => {
+                        let listorder=[];
+                        for(let i of value?.itemList)
+                        {
+                            listorder=[...listorder,...i.itemList.filter(a=>a.order)]
+                        }
+                       const result = Object.values(
+  listorder.reduce((acc, item) => {
+    if (!acc[item.ten]) {
+      acc[item.ten] = { ...item };
+    } else {
+      acc[item.ten].soluong += item.soluong;
+    }
+    return acc;
+  }, {})
+);
+
+                        setGetorder(result);
+                    }}
+                    label="Đặt"
+                ></Button>:<></>}
+              {!order?<>  <Button
                     onClick={() => {
                         setValue(JSON.parse(JSON.stringify(hangxuat[0])));
                     }}
                     label="Reset"
                 ></Button>
+                
                 <Button
                     onClick={() => {
                         setPrice(!price);
@@ -216,8 +347,9 @@ const Dashboard = () => {
                         );
                     }}
                     label="Lưu"
-                ></Button>
+                ></Button></>:<></>}
             </div>
+            {getorder?<DetailConngno onClose={()=>setGetorder(null)} listCongno={getorder}></DetailConngno>:<></>}
             <div
                 style={{
                     overflow: 'auto'
@@ -226,7 +358,7 @@ const Dashboard = () => {
             >
                 {value &&
                     value.itemList.map((i) => {
-                        return <BillItem price={price} key={i.id} setState={() => setValue((pre) => ({ ...pre }))} item={i}></BillItem>;
+                        return <BillItem order={order} price={price} key={i.id} setState={() => setValue((pre) => ({ ...pre }))} item={i}></BillItem>;
                     })}
             </div>
            

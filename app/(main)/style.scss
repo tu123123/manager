@@ -1,0 +1,33 @@
+.DetailConngno {
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    .headerdonhang{
+              border-bottom: 1px dashed rgba(134, 134, 134, 0.473);
+    }
+    .table-congno {
+        margin-top: 10px;
+        min-width: 60%;
+        td {
+            padding: 10px;
+              border-bottom: 1px dashed rgba(134, 134, 134, 0.473);
+        }
+        th{
+            padding: 10px;
+            text-align: start;
+        }
+      
+    }
+    .footercongno {
+        td {
+            padding: 3px 10px;
+            font-size: 1em;
+        }
+        width: 100%;
+        display: flex;
+        justify-content: end;
+        table {
+            width: fit-content;
+        }
+    }
+}
