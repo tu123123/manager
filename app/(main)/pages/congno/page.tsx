@@ -19,6 +19,7 @@ import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { toPng } from 'html-to-image';
 const formatvalue='DD-MM-YYYY'
 import moment from 'moment';
+import { useRouter } from 'next/navigation';
 const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[]; onClose: () => void }) => {
     const [value, setValue] = useState();
     const { dsThanhtoan } = thanhtoanStore();
@@ -172,6 +173,7 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[
 export default function Congno() {
     const { danhsachPhieu, getPhieunhap, getDanhSachPhieunhap } = hangnhapStore();
     const { getLienhe, lienhe } = lienheStore();
+    const router = useRouter();
     const { getThanhtoan, dsThanhtoan } = thanhtoanStore();
     useEffect(() => {
         getDanhSachPhieunhap();
@@ -196,7 +198,7 @@ export default function Congno() {
                 <h4>Danh sách Công nợ</h4>
             </div>
             <div className="congno-content">
-                {lienhe
+                {/* {lienhe
                     .sort((x, y) => {
                         const listCongno = (xx) => {
                             const payment = dsThanhtoan.filter((x) => x.idDoitac === xx.id).reduce((a, b) => a + b.sotien, 0);
@@ -223,6 +225,24 @@ export default function Congno() {
                             >
                                 <div>{i.name}</div>
                                 <div className="itemcongno">{formatNumber(total - payment)}</div>
+                            </div>
+                        );
+                    })} */}
+                      {lienhe               
+                    .map((i) => {
+                        return (
+                            <div
+                                 onClick={() => router.push('/pages/nhaphangmess?id=' + i.id)}
+                                className="congnoItem"
+                                key={i.id}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                            >
+                                <div>{i.name}</div>
+                           
                             </div>
                         );
                     })}
