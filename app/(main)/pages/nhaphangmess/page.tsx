@@ -5,7 +5,7 @@ import { ListDropGroup } from '@/compnents/ListDropGroup/listDropgroup';
 import './index.scss';
 import editsvg from '@/compnents/assets/edit.svg';
 import { lienheStore } from '@/store/lienheStore';
-import { danhsachphieuType, hangnhapStore } from '@/store/hangnhapStore';
+import { danhsachphieuType, hangnhapStore, phieunhapItemtype } from '@/store/hangnhapStore';
 import { useEffect, useRef, useState } from 'react';
 import { Tag } from 'primereact/tag';
 import downSvg from '@/compnents/assets/download.svg';
@@ -29,20 +29,8 @@ import { uuid } from 'uuidv4';
 import { Checkbox } from 'antd-mobile';
 import { confirmDialog } from 'primereact/confirmdialog';
 const dbPhieunhap = 'donnhaphang';
-const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[]; onClose: () => void }) => {
+const DetailConngno = ({ onClose, listCongno }: { listCongno: phieunhapItemtype[]; onClose: () => void }) => {
     const [value, setValue] = useState();
-    const { dsThanhtoan } = thanhtoanStore();
-    const { phieunhap } = hangnhapStore();
-        const [show,setShow]=useState(false)
-         const index = listCongno.findIndex(x=>x.endbill)
-         console.log(index)
-    const total = listCongno.reduce((a, b) => a + b.itemList.reduce((c, d) => c + d.soluong * d.gia, 0), 0);
-    const payment = dsThanhtoan.filter(x=>(!show?x.group==listCongno[index]?.id:true)&& x?.idDoitac === listCongno[0].idDoitac).reduce((a, b) => a + b.sotien, 0);
-   console.log(listCongno)
-   
-    
-
-     
         const imgRef = useRef();
       const footerContent = () => {
         return (
@@ -53,7 +41,7 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[
                     justifyContent: 'end'
                 }}
             >
-                <Button onClick={()=>setShow(!show)} raised outlined size="small" security="" height={20}>Show</Button>
+                
                 <Button
                     raised
                     outlined
@@ -107,73 +95,42 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[
                         fontSize:'20px',
                         fontWeight:'bold',
                         textAlign:'center'
-                    }}>Hóa đơn nhập hàng</div>
-                    <h6>Người bán: {listCongno[0].tenDoiTac}</h6>
+                    }}>Danh sách đặt hàng</div>
                 </div>
                 <table className="table-congno">
-                    {[...listCongno.slice(0,index<0||show?listCongno.length:index)]?.reverse()?.map((i) => {
-                        return i.itemList.map((x, index) => {
+                    <thead>
+                        <tr>
+                            <th>
+                            Tên
+                        </th>
+                        <th>Số lượng</th>
+                           <th>Giá</th>
+                              <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    {listCongno?.map((x,index) => {
+   let time=false
+                    if(index===0)
+                        time=true
+                   else if(moment(x.time).format('DD/MM/YYYY')!==moment(listCongno[index-1].time).format('DD/MM/YYYY'))
+                        time=true
                             return (
-                                <tr key={x.id}>
-                                    <td>{index == 0 ? phieunhap.find((xx) => xx.id === i.group)?.ten : ''}</td>
+                               [ time?<tr className='timegroup'><td>{moment(x.time).format('DD/MM/YYYY')}</td></tr>:undefined,
+                                 <tr style={{
+                                    background:x.pay?'#ffc5c5':''
+                                }} key={x.id}>
+                                  
                                     <td>{x.ten}:</td> <td>{x.soluong}</td>
-                                    <td>x</td>
-                                    <td>{x.gia}</td>
-                                    <td>=</td>
-                                    <td>{formatNumber(x.gia * x.soluong)}</td>
+                                     <td>{formatNumber(x.gia)}</td>
+                                      <td>{formatNumber(x.soluong*x.gia)}</td>
+                                    
                                 </tr>
+                               ]
                             );
-                        });
+                      
                     })}
                 </table>
-                {show?<div className="footercongno">
-                    <table>
-                        <tr>
-                            <td>Tổng:</td>
-                            <td>{formatNumber(total)}</td>
-                        </tr>
-                        <tr>
-                            <td>Đã thanh toán:</td>
-                            <td>{formatNumber(payment)}</td>
-                        </tr>
-                        <tr
-                            style={{
-                                color:'red',
-                                fontWeight: 'bold'
-                            }}
-                        >
-                            <td>Còn lại:</td>
-                            <td
-                                style={{
-                                    textAlign: 'end'
-                                }}
-                            >
-                                {formatNumber(total - payment)}
-                            </td>
-                        </tr>
-                    </table>
-                </div>: <div className="footercongno">
-                    <table  >
-                        <tr    style={{
-                           
-                                fontWeight: 'bold'
-                            }}>
-                            <td>Tổng:</td>
-                            <td>{formatNumber(listCongno.slice(0,index<0?listCongno.length:index).reduce((a,b)=>a+b.itemList.reduce((c,d)=>c+d.gia*d.soluong,0),0))}</td>
-                        </tr>
-                          <tr >
-                            <td>Đã thanh toán:</td>
-                            <td>{formatNumber(payment)}</td>
-                        </tr>
-                         <tr    style={{
-                                color:'red',
-                                fontWeight: 'bold'
-                            }}>
-                            <td>Còn lại:</td>
-                            <td>{formatNumber(listCongno.slice(0,index<0?listCongno.length:index).reduce((a,b)=>a+b.itemList.reduce((c,d)=>c+d.gia*d.soluong,0),0)-payment)}</td>
-                        </tr>
-                    </table>
-                </div> }
+               <div className='totaltable'>{`Tổng tiền: ${formatNumber(listCongno.reduce((a,b)=>a+b.gia*b.soluong*(b.pay?-1:1),0))}`}</div>
             </div>
            </div>
         </Dialog>
@@ -285,10 +242,12 @@ const handleMouseUp = () => {
           
     }, []);
     const [open, setOpen] = useState();
+    const [open2,setOpen2]=useState();
 
     return (
       
             <div className="nhaphangmess-content">
+                {open2&&<DetailConngno listCongno={data?.itemList} onClose={()=>setOpen2(false)} ></DetailConngno>}
                 {open&&<ModalDonhang id={id} onClose={()=>setOpen(false)}></ModalDonhang>}
               <div className='nhaphangmess-head'><Button onClick={()=>{setOpen(true)}} label='Tạo đơn'></Button><SelectComponent
                     data={phieunhapmess.filter(i=>i.iduser==id)}
@@ -298,7 +257,7 @@ const handleMouseUp = () => {
                       
                     }}
                     value={data?.ten}
-                ></SelectComponent></div>
+                ></SelectComponent><Button onClick={()=>{setOpen2(true)}} label='Xuất đơn'></Button></div>
               {data?.id?<>  <div ref={e=>{
                 if(e)
                 e.scrollTop = e.scrollHeight;
@@ -307,7 +266,7 @@ const handleMouseUp = () => {
                     let time=false
                     if(index===0)
                         time=true
-                   else if(moment(a.time).format('DD/MM/YYYY')!==moment(data.itemList[index].time).format('DD/MM/YYYY'))
+                   else if(moment(a.time).format('DD/MM/YYYY')!==moment(data.itemList[index-1].time).format('DD/MM/YYYY'))
                         time=true
                     return  <div key={a.id} className='mess-text'> 
                         {time?<div className='time'>{moment(a.time).format('DD/MM/YYYY')}</div>:<></>}

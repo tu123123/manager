@@ -22,7 +22,7 @@ const AppFooter = () => {
         }
         , {
             icon:importsvg,
-            link:'/pages/nhaphang'
+            link:'/pages/congno'
         }
     ]
     return (

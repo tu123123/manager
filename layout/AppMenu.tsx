@@ -22,11 +22,11 @@ const AppMenu = () => {
         {
             label: 'Tài chính',
             items: [
-                { label: 'Công nợ khách hàng', to: '/pages/congno' },
-                {
-                    label: 'Lịch sử thanh toán',
-                    to: '/pages/lichsuthanhtoan'
-                },
+                { label: 'Danh sách khách hàng', to: '/pages/congno' },
+                // {
+                //     label: 'Lịch sử thanh toán',
+                //     to: '/pages/lichsuthanhtoan'
+                // },
                   { label: 'Chi phí đám cưới', to: '/pages/damcuoi' },
                 
             ]

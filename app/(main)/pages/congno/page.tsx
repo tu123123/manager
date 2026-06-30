@@ -20,6 +20,8 @@ import { toPng } from 'html-to-image';
 const formatvalue='DD-MM-YYYY'
 import moment from 'moment';
 import { useRouter } from 'next/navigation';
+import { Input } from 'antd-mobile';
+import { messhangnhapStore } from '@/store/messhangnhap';
 const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[]; onClose: () => void }) => {
     const [value, setValue] = useState();
     const { dsThanhtoan } = thanhtoanStore();
@@ -171,15 +173,15 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: danhsachphieuType[
     );
 };
 export default function Congno() {
+    const { getmessPhieunhap,phieunhapmess } = messhangnhapStore();
     const { danhsachPhieu, getPhieunhap, getDanhSachPhieunhap } = hangnhapStore();
     const { getLienhe, lienhe } = lienheStore();
     const router = useRouter();
+        const [search,setSearch]=useState('')
     const { getThanhtoan, dsThanhtoan } = thanhtoanStore();
     useEffect(() => {
-        getDanhSachPhieunhap();
-        getPhieunhap();
+        getmessPhieunhap()
         getLienhe();
-        getThanhtoan();
     }, []);
     const [open, setOpen] = useState<danhsachphieuType[] | null>();
 
@@ -197,6 +199,9 @@ export default function Congno() {
             >
                 <h4>Danh sách Công nợ</h4>
             </div>
+            <Input style={{
+                            borderBottom:'1px solid gray'
+                            }} placeholder='Tìm kiếm...' value={search} onChange={(e)=>setSearch(e)}></Input>
             <div className="congno-content">
                 {/* {lienhe
                     .sort((x, y) => {
@@ -228,8 +233,9 @@ export default function Congno() {
                             </div>
                         );
                     })} */}
-                      {lienhe               
+                      {lienhe.filter(i=>i.name?.toLowerCase().includes(search?.toLowerCase()))              
                     .map((i) => {
+                        const total=phieunhapmess?.find(x=>x.iduser===i.id)?.itemList.reduce((a,b)=>a+b.gia*b.soluong*(b.pay?-1:1),0)
                         return (
                             <div
                                  onClick={() => router.push('/pages/nhaphangmess?id=' + i.id)}
@@ -242,7 +248,7 @@ export default function Congno() {
                                 }}
                             >
                                 <div>{i.name}</div>
-                           
+                            <div className="itemcongno">{formatNumber(total||0)}</div>
                             </div>
                         );
                     })}
