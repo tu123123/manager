@@ -305,13 +305,14 @@ const handleMouseUp = () => {
                 <div className='total'>{`Tổng tiền: ${formatNumber(data.itemList.reduce((a,b)=>a+b.gia*b.soluong*(b.pay?-1:1),0))}`}</div>
                 <div className='nhaphangmess-footer'>
                     <div className='footer-content'>
-                     <div className='textinput'>
-                          <InputText    value={value.time}
+                                                  <InputText    value={value.time}
                     onChange={(e) => {
                         value.time = e.target.value;
                    setValue(pre=>({...pre}))
                     }}
                      placeholder='YYYY-MM-DD'></InputText>
+                     <div className='textinput'>
+
                            <InputText    value={value.ten}
                     onChange={(e) => {
                         value.ten = e.target.value;
