@@ -19,7 +19,7 @@
    td{
     font-size: 13px;
     font-weight: bold;
-     border-bottom: 1px dashed rgba(128, 128, 128, 0.425);
+    //  border-bottom: 1px dashed rgba(128, 128, 128, 0.425);
    }
 }
 .nhaphangmess-content{
@@ -107,15 +107,28 @@ gap: 10px;
         }
     }
 }
+.footerTotal{
+    margin-top: 10px;
+    td{
+        padding: 4px;
+    }
+    .headname{
+        font-weight: bold;
+    }
+    // border-top: 1px dashed gray;
+}
 .DetailConngno {
     padding: 10px;
     border: 1px solid gray;
     border-radius: 5px;
     .table-congno {
+        tr{
+            box-shadow: 0px 0px 1px 1px rgba(128, 128, 128, 0.164);
+        }
         td {
             padding: 5px;
         }
-        border-bottom: 1px dashed rgba(134, 134, 134, 0.473);
+       
     }
     .footercongno {
         td {
@@ -131,5 +144,5 @@ gap: 10px;
     }
 }
 .headerdonhang{
-    border-bottom: 1px dashed gray;
+    // border-bottom: 1px dashed gray;
 }

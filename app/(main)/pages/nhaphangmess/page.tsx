@@ -95,7 +95,7 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: phieunhapItemtype[
                         fontSize:'20px',
                         fontWeight:'bold',
                         textAlign:'center'
-                    }}>Danh sách đặt hàng</div>
+                    }}>Toa hàng nhập</div>
                 </div>
                 <table className="table-congno">
                     <thead>
@@ -120,7 +120,7 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: phieunhapItemtype[
                                     background:x.pay?'#ffc5c5':''
                                 }} key={x.id}>
                                   
-                                    <td>{x.ten}:</td> <td>{x.soluong}</td>
+                                    <td >{x.ten}:</td> <td>{x.soluong}</td>
                                      <td>{formatNumber(x.gia)}</td>
                                       <td>{formatNumber(x.soluong*x.gia)}</td>
                                     
@@ -130,7 +130,26 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: phieunhapItemtype[
                       
                     })}
                 </table>
-               <div className='totaltable'>{`Tổng tiền: ${formatNumber(listCongno.reduce((a,b)=>a+b.gia*b.soluong*(b.pay?-1:1),0))}`}</div>
+                <div className='footerTotal' style={{
+                    display:'flex',
+                    justifyContent:'end'
+                }}>
+                    <table>
+                    <tr>
+                        <td className='headname'>Tổng tiền:</td>
+                        <td> {formatNumber(listCongno.filter(x=>!x.pay).reduce((a,b)=>a+b.gia*b.soluong,0))}</td>
+                    </tr>
+                     <tr>
+                        <td className='headname'>Đã thanh toán:</td>
+                        <td> {formatNumber(listCongno.filter(x=>x.pay).reduce((a,b)=>a+b.gia*b.soluong,0))}</td>
+                    </tr>
+                     <tr>
+                        <td className='headname'>Còn lại:</td>
+                        <td> {formatNumber(listCongno.reduce((a,b)=>a+b.gia*b.soluong*(b.pay?-1:1),0))}</td>
+                    </tr>
+                </table>
+                </div>
+
             </div>
            </div>
         </Dialog>
@@ -257,7 +276,7 @@ const handleMouseUp = () => {
                       
                     }}
                     value={data?.ten}
-                ></SelectComponent><Button onClick={()=>{setOpen2(true)}} label='Xuất đơn'></Button></div>
+                ></SelectComponent>{data?.id?<Button onClick={()=>{setOpen2(true)}} label='Xuất đơn'></Button>:<></>}</div>
               {data?.id?<>  <div ref={e=>{
                 if(e)
                 e.scrollTop = e.scrollHeight;
@@ -287,6 +306,12 @@ const handleMouseUp = () => {
                 <div className='nhaphangmess-footer'>
                     <div className='footer-content'>
                      <div className='textinput'>
+                          <InputText    value={value.time}
+                    onChange={(e) => {
+                        value.time = e.target.value;
+                   setValue(pre=>({...pre}))
+                    }}
+                    autoFocus placeholder='YYYY-MM-DD'></InputText>
                            <InputText    value={value.ten}
                     onChange={(e) => {
                         value.ten = e.target.value;
@@ -327,10 +352,13 @@ if (index !== -1) {
 }
                         }
                         else
-                        data.itemList.push({...value,time:moment().format("YYYY-MM-DDTHH:mm:ss"),id:uuid()})
+                        data.itemList.push({...value,time:value.time||moment().format("YYYY-MM-DDTHH:mm:ss"),id:uuid()})
+                    let time=''
+                    if(!value.id)
+                        time=value.time
                     setValue({
                                 ten:'',
-        time:'',
+        time:time,
         soluong:0,
         gia:0,
         pay:false
