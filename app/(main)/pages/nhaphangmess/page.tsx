@@ -311,7 +311,7 @@ const handleMouseUp = () => {
                         value.time = e.target.value;
                    setValue(pre=>({...pre}))
                     }}
-                    autoFocus placeholder='YYYY-MM-DD'></InputText>
+                     placeholder='YYYY-MM-DD'></InputText>
                            <InputText    value={value.ten}
                     onChange={(e) => {
                         value.ten = e.target.value;
