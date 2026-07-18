@@ -85,7 +85,7 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: phieunhapItemtype[
     return (
         <Dialog footer={footerContent} header={'Danh sách đơn'} visible={true} onHide={onClose}>
            <div ref={imgRef} className='printerdetail'>
-             <div className="DetailConngno">
+             <div className="DetailConngno6">
                 <div className='headerdonhang'>
                     <h4>Hoa tươi Hoàng vũ</h4>
                     <p>ĐC: 306 Nguyên Tử Lực, phường Lâm Viên, Đà Lạt, Lâm Đồng</p>

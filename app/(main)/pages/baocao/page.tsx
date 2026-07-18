@@ -16,7 +16,7 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: donhangItem[]; onC
     
     return (
         <Dialog header={'Danh sách đơn'} visible={true} onHide={onClose}>
-            <div className="DetailConngno">
+            <div className="DetailConngno3">
                 <table className="table-congno">
                     {listCongno.map((i) => {
                         return (
