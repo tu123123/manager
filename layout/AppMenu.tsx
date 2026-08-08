@@ -23,6 +23,7 @@ const AppMenu = () => {
             label: 'Tài chính',
             items: [
                 { label: 'Danh sách khách hàng', to: '/pages/congno' },
+                  { label: 'Chi tiêu', to: '/pages/chitieu' },
                 // {
                 //     label: 'Lịch sử thanh toán',
                 //     to: '/pages/lichsuthanhtoan'

@@ -1,0 +1,148 @@
+.khachhang-container {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+    overflow: auto;
+    height: 100%;
+
+}
+.table-congno{
+    width: 100%;
+}
+.totaltable{
+    text-align: end;
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 500;
+}
+.timegroup{
+   td{
+    font-size: 13px;
+    font-weight: bold;
+    //  border-bottom: 1px dashed rgba(128, 128, 128, 0.425);
+   }
+}
+.nhaphangmess-content{
+
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: 10px;
+    overflow: auto;
+    height: 100%;
+      .total{
+        font-weight: bold;
+        text-align: end;
+        font-size: 15px;
+    }
+    .textinput{
+display: grid;
+grid-template-columns:1fr auto;
+gap: 10px;    
+    }
+    .nhaphangmess-head{
+        display:grid;
+        grid-template-columns: max-content 1fr max-content;
+        gap: 10px;
+    }
+    .nhaphangmess-footer{
+        gap: 10px;
+        display: grid;
+        grid-template-columns: 1fr 100px;
+        .footer-number{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        input{
+            width: 100%;
+        }
+    }
+ .nhaphangmess-body{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    .mess-text{
+        width: 100%;
+                height: max-content;
+    }
+    .time{
+        color: gray;
+        text-align: center;
+       
+        border-bottom: 1px solid gray;
+        margin-bottom: 10px;
+    }
+    .mess-content{
+        padding: 10px;
+        background: white;
+        height: max-content;
+        justify-self: end;
+        width: max-content;
+        border-radius: 10px;
+        max-width: 90%;
+
+    }
+    .pay{
+        background: rgb(255, 161, 161);
+        color: white;
+    }
+   background: rgba(209, 227, 255, 0.493);
+    overflow: auto;
+ }
+}
+.printerdetail{
+    padding: 10px;
+   
+    p,h4,h6{
+        padding: 0;
+        margin: 5px;
+    }
+    h6{
+        padding: 5px;
+    }
+    .headerdonhang{
+        p{
+            color: gray;
+            font-size: 13px;
+        }
+    }
+}
+.footerTotal{
+    margin-top: 10px;
+    td{
+        padding: 4px;
+    }
+    .headname{
+        font-weight: bold;
+    }
+    // border-top: 1px dashed gray;
+}
+.DetailConngno6 {
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    .table-congno {
+        tr{
+            box-shadow: 0px 0px 1px 1px rgba(128, 128, 128, 0.164);
+        }
+        td {
+            padding: 5px;
+        }
+       
+    }
+    .footercongno {
+        td {
+            padding: 3px 10px;
+            font-size: 1em;
+        }
+        width: 100%;
+        display: flex;
+        justify-content: end;
+        table {
+            width: fit-content;
+        }
+    }
+}
+.headerdonhang{
+    // border-bottom: 1px dashed gray;
+}
