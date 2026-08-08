@@ -135,13 +135,14 @@ const DetailConngno = ({ onClose, listCongno }: { listCongno: phieunhapItemtype[
                     justifyContent:'end'
                 }}>
                     <table>
-                    <tr>
-                        <td className='headname'>Tổng tiền:</td>
-                        <td> {formatNumber(listnotoday.reduce((a,b)=>a+b.gia*b.soluong*(!b.pay?-1:1),0)+listtoday.filter(x=>x.pay).reduce((a,b)=>a+b.gia*b.soluong,0))}</td>
-                    </tr>
+                  
                      <tr>
-                        <td className='headname'>Đã thanh toán:</td>
+                        <td className='headname'>Tổng:</td>
                         <td> {formatNumber(listtoday.filter(x=>!x.pay).reduce((a,b)=>a+b.gia*b.soluong,0))}</td>
+                    </tr>
+                      <tr>
+                        <td className='headname'>Tiền trong thẻ:</td>
+                        <td> {formatNumber(listnotoday.reduce((a,b)=>a+b.gia*b.soluong*(!b.pay?-1:1),0)+listtoday.filter(x=>x.pay).reduce((a,b)=>a+b.gia*b.soluong,0))}</td>
                     </tr>
                      <tr>
                         <td className='headname'>Còn lại:</td>
