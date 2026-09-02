@@ -36,9 +36,10 @@
         justify-content: end;
         display: grid;
 
-        grid-template-columns: auto auto;
+        grid-template-columns: 1fr 1fr;
         gap: 10px;
     }
+    
     .itemtotal {
         text-align: end;
     }
@@ -71,13 +72,17 @@ padding: 5px;
         border-right: 1px solid gray;
     }
     .ItemDon-total{
-        display: flex;
+        display: grid;
+        grid-template-columns: auto auto;
         gap: 10px;
         justify-content: end;
         width: 100%;
         padding: 10px;
         font-size: 20px;
         border-top: 1px dashed gray;
+        p{
+            font-size: 15px;
+        }
     }
 }
 .itemDonhang {

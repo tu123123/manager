@@ -106,6 +106,7 @@ const ItemDonhang = ({ item, setValue }: { item: itemList; setValue: unknown }) 
                 ></InputNumber>{' '}
                 = {formatNumber(item.gia * item.soluong)}
             </div>
+     
             <InputNumber
                 value={(item.cost || 0) / 1000}
                 mode="decimal"
@@ -113,7 +114,7 @@ const ItemDonhang = ({ item, setValue }: { item: itemList; setValue: unknown }) 
                 minFractionDigits={0}
                 maxFractionDigits={5}
                 onChange={(x) => {
-                    item.cost = (x.cost as number) * 1000;
+                    item.cost = (x.value as number) * 1000;
                     setValue((pre) => ({ ...pre }));
                 }}
             ></InputNumber>
@@ -363,7 +364,12 @@ const ChitietDon=({listBill, onClose}:{listBill:donhangItem[],onClose:()=>void})
                 size="small"
                 onClick={async () => {
                     const el = imgRef.current;
-             
+                const footer = imgRef.current.querySelector('.p-card-footer');
+                    const loinhuan=imgRef.current.querySelectorAll('.loinhuan')
+          
+                    if(loinhuan)
+                        for(let i of loinhuan)
+                          i.style.display = 'none';
                     const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#ffffff' });
 
                     const base64Data = dataUrl.split(',')[1];
@@ -389,7 +395,9 @@ const ChitietDon=({listBill, onClose}:{listBill:donhangItem[],onClose:()=>void})
                         link.click();
                         link.remove();
                     }
-              
+                if(loinhuan)
+                        for(let i of loinhuan)
+                          i.style.display = 'revert';
                 }}
                 icon={<Image src={downSvg} alt="" height={20}></Image>}
             ></Button>
@@ -434,7 +442,8 @@ const ChitietDon=({listBill, onClose}:{listBill:donhangItem[],onClose:()=>void})
                 <div className="ItemDon-total">
                     <strong>Tổng:</strong>
                     <strong>{formatNumber(listBill.reduce((a,b)=>a+b.itemList.reduce((c,d)=>c+d.gia*d.soluong,0),0))}</strong>
-  
+    <p className='loinhuan'>Lợi nhuận:</p>
+                    <p className='loinhuan'>{formatNumber(listBill.reduce((a,b)=>a+b.itemList.reduce((c,d)=>c+(d.gia-d.cost)*d.soluong,0),0))}</p>
                         
                            
                 
@@ -468,8 +477,13 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
                 size="small"
                 onClick={async () => {
                     const el = imgRef.current;
+                  
                     const footer = imgRef.current.querySelector('.p-card-footer');
+                    const loinhuan=imgRef.current.querySelectorAll('.loinhuan')
                     footer.style.display = 'none';
+                    if(loinhuan)
+                        for(let i of loinhuan)
+                          i.style.display = 'none';
                     const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#ffffff' });
 
                     const base64Data = dataUrl.split(',')[1];
@@ -496,6 +510,9 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
                         link.remove();
                     }
                     footer.style.display = 'revert';
+                      if(loinhuan)
+                        for(let i of loinhuan)
+                          i.style.display = 'revert';
                 }}
                 icon={<Image src={downSvg} alt="" height={20}></Image>}
             ></Button>
@@ -666,7 +683,7 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
                     <div className="itemtotal">{item.itemList.length}</div>
                     <div>Số thùng:</div>
                     <div className="itemtotal">{item.sothung}</div>
-                    {console.log(listBill)}
+                  
                     {show && listBill?.total ? (
                         <>
                             <div>Nợ cũ:</div>
@@ -675,6 +692,8 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
                                 Tổng toa({listBill?.date.from}-{listBill?.date.to}):
                             </strong>
                             <strong className="itemtotal">{formatNumber(listBill?.total + item.itemList.reduce((a, b) => a + b.soluong * b.gia, 0))}</strong>
+                            <div className='loinhuan'>Lợi nhuận:</div>
+                            <div className="itemtotal loinhuan">{formatNumber(item.itemList.reduce((a, b) => a + (b.soluong * (b.gia-b.cost)), 0))}</div>
                         </>
                     ) : (
                         ''
