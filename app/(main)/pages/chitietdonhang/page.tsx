@@ -678,7 +678,7 @@ const ItemDon = ({ item }: { item: donhangItem }) => {
 
                 <div className="ItemDon-total">
                     <strong>Tổng</strong>
-                    <strong>{formatNumber(item.itemList.reduce((a, b) => a + b.soluong * b.gia, 0))}</strong>
+                    <strong className="itemtotal">{formatNumber(item.itemList.reduce((a, b) => a + b.soluong * b.gia, 0))}</strong>
                     <div>Tổng mặt hàng:</div>
                     <div className="itemtotal">{item.itemList.length}</div>
                     <div>Số thùng:</div>

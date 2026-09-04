@@ -45,10 +45,12 @@ export const donHangStore = create<DonHangStore>((set) => ({
     hangxuat: [],
     hangnhap: [],
     getHangxuat: () => {
-        getData('hangxuat', (e) => {
+        loadingRef.current?.on();
+        getData('hangxuat', (e) => {loadingRef.current?.off();
             set({
                 hangxuat: e?.reverse()
-            });
+                
+            });   
         });
     },
     getHangxuatById: (id, success) => {
